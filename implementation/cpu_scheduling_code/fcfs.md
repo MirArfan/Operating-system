@@ -1,3 +1,4 @@
+```c++
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -48,10 +49,13 @@ int main()
 
     return 0;
 }
+```
 
-// output
-// PID	AT	BT	CT	TAT	WT
-// P1	0	5	5	5	0
-// P2	1	3	8	7	4
-// P3	2	8	16	14	6
-// P4	3	6	22	19	13
+ output
+ ```
+ PID	AT	BT	CT	TAT	WT
+ P1	0	5	5	5	0
+ P2	1	3	8	7	4
+ P3	2	8	16	14	6
+ P4	3	6	22	19	13
+```
