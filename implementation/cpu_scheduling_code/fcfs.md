@@ -30,10 +30,10 @@ int main()
         int x = pq.top().first;
         int i = pq.top().second;
         pq.pop();
-
+        
+        prev = max(prev, x); // <-- CPU idle handle
         prev += bt[i];
         ct[i] = prev;
-        //cout << "(" << x << "," << i << ") "<<endl;
     }
 
     for(int i = 0; i < n; i++) {

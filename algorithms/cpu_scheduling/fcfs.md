@@ -317,7 +317,7 @@ int main() {
         int prev_idx = process[i - 1].second;
 
         // If next process arrives after CPU is idle
-        if (at[idx] > ct[prev_idx])
+        if (at[idx] > ct[prev_idx])  // <-- CPU idle handle
             ct[idx] = at[idx] + bt[idx];
         else
             ct[idx] = ct[prev_idx] + bt[idx];
