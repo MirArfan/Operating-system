@@ -8,8 +8,9 @@ This folder contains **implementation + explanation** of key Operating System al
 
 ### 🕐 CPU Scheduling
 - FCFS (First Come First Serve) ( ✅ done)
-- SJF (Shortest Job First)
-- Round Robin (RR)
+- SJF (Shortest Job First) ( ✅ done)
+- SRT (Shortest Reaming Time) ( ✅ done)
+- Round Robin (RR)  ( ✅ done)
 - Priority Scheduling
 
 ### 💾 Page Replacement
