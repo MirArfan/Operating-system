@@ -7,7 +7,7 @@
 In Preemptive Priority Scheduling, the CPU always executes the process with the highest priority (smaller number = higher priority).  
 If a new process arrives with a higher priority than the currently running process, the CPU preempts the running process and executes the new one.
 
-#### 🔹 Bangla:
+#### 🔹 
 Preemptive Priority Scheduling-এ CPU সবসময় ready queue-তে থাকা highest priority process-কে চালায়।  
 যদি নতুন কোনো process আসে যার priority চলমান process-এর থেকে বেশি হয়, CPU current process থামিয়ে নতুন process চালু করে।
 
@@ -43,16 +43,16 @@ Consider the set of 5 processes whose arrival time, burst time, and priority are
 
 > **Note:** Higher number represents **higher priority**.
 
----
 
-## ⚙️ CPU Scheduling Policy  
+
+### ⚙️ CPU Scheduling Policy  
 **Type:** Priority (Preemptive)  
 
 In **Preemptive Priority Scheduling**, whenever a new process arrives with a **higher priority**, it immediately **preempts** (interrupts) the currently running process and takes over the CPU.
 
----
 
-## 🧩 Step-by-Step Explanation
+
+### 🧩 Step-by-Step Explanation
 
 1. **At time 0:**  
    - Only **P1** is available → starts execution.  
@@ -90,17 +90,14 @@ In **Preemptive Priority Scheduling**, whenever a new process arrives with a **h
    - **P2** finishes.  
    - Only **P1** remains → resumes and finishes at **t = 15**.  
 
----
 
-## 🧭 Gantt Chart
-
+### 🧭 Gantt Chart
+```
 | P1 | P2 | P3 | P4 | P5 | P2 | P1 |
-|----|----|----|----|----|----|----|
-| 0  | 1  | 2  | 3  | 8  | 10 | 12 | 15 |
+0    1    2    3    8    10   12   15 
+```
 
----
-
-## 📊 Calculations
+### 📊 Calculations
 
 | Process ID | AT | BT | CT | TAT = CT - AT | WT = TAT - BT |
 |-------------|----|----|----|----------------|----------------|
@@ -118,7 +115,7 @@ In **Preemptive Priority Scheduling**, whenever a new process arrives with a **h
 **Average Waiting Time (WT)** = (11 + 8 + 0 + 0 + 4) / 5 = **4.6 units**
 
 
-## ✅ Summary
+### ✅ Summary
 
 - **Preemptive Priority Scheduling** allows higher-priority processes to interrupt lower ones.  
 - Helps reduce waiting time for high-priority processes.  
@@ -127,7 +124,7 @@ In **Preemptive Priority Scheduling**, whenever a new process arrives with a **h
 ---
 
 
-### 🧮 Preemptive Priority Scheduling Example
+### 🧮 Preemptive Priority Scheduling Example 2
 
 ### Given:
 In preemptive priority scheduling, if a process arrives that has **higher priority** than the executing process, it **pre-empts** the lower priority process.
@@ -139,9 +136,16 @@ In preemptive priority scheduling, if a process arrives that has **higher priori
 | P3      | 4                | 3                 | 3        |
 | P4      | 10               | 4                 | 1        |
 
-**Note:** Lower priority number = higher priority.
+>**Note:** Lower priority number = higher priority.
 
-
+```
+|  p1  |  p2   |    p4   |     p2   |     p1   |    p3   |
+0      4       10        14         18         22        25
+p1=8   p1=4    p1        p1         p1         p3
+       p2=10   p2=4      p2         p3
+       p3=3    p3        p3
+               p4
+```
 
 ### ⚙️ Step-by-Step Execution
 
@@ -191,27 +195,17 @@ In preemptive priority scheduling, if a process arrives that has **higher priori
 ### Turnaround Time (TAT)
 > TAT = Completion Time − Arrival Time
 
-| Process | Completion Time | Arrival Time | TAT |
-|---------|-----------------|--------------|-----|
-| P1      | 22              | 0            | 22 - 0 = 22 ms |
-| P2      | 18              | 4            | 18 - 4 = 14 ms |
-| P3      | 25              | 4            | 25 - 4 = 21 ms |
-| P4      | 14              | 10           | 14 - 10 = 4 ms |
+| Process |AT|BT | CT | TAT |  WT |
+|---------|---|--|---------------------|-----|-----|
+| P1     |0|     8     | 22                         | 22 - 0 = 22 ms | 22 - 8 = 14 ms 
+| P2     |4|     10      | 18                         | 18 - 4 = 14 ms | 14 - 10 = 4 ms 
+| P3     | 4|    3     | 25                         | 25 - 4 = 21 ms | 21 - 3 = 18 ms 
+| P4    |  10|   4   | 14                      | 14 - 10 = 4 ms | 4 - 4 = 0 ms
 
 **Average Turnaround Time (ATT)**  
 = (22 + 14 + 21 + 4) / 4 = **15.25 ms**
 
 
-
-### Waiting Time (WT)
-> WT = TAT − Burst Time
-
-| Process | TAT | Burst Time | WT |
-|---------|-----|------------|----|
-| P1      | 22  | 8          | 22 - 8 = 14 ms |
-| P2      | 14  | 10         | 14 - 10 = 4 ms |
-| P3      | 21  | 3          | 21 - 3 = 18 ms |
-| P4      | 4   | 4          | 4 - 4 = 0 ms |
 
 **Average Waiting Time (AWT)**  
 = (14 + 4 + 18 + 0) / 4 = **7 ms**
@@ -224,3 +218,174 @@ In preemptive priority scheduling, if a process arrives that has **higher priori
 | **Average Turnaround Time (ATT)** | 15.25 ms |
 | **Average Waiting Time (AWT)**    | 7 ms |
 
+---
+
+### 2 Preemptive Priority Scheduling (C++)
+
+ধারণা: CPU সবসময় ready queue-এ থাকা highest priority প্রসেস চালায়; নতুন উচ্চতর priority আসলে current process preempt হয়।
+
+এখানে per-time unit simulation করা হয়েছে (time advances by 1 unit per iteration) — ফলে সুস্পষ্টভাবে preemption দেখা যায়।
+
+```c++
+// preemptive_priority.cpp
+// Preemptive Priority Scheduling (lower number => higher priority)
+// Compile: g++ preemptive_priority.cpp -o p_priority
+// Run: ./p_priority
+
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+
+    int n;
+    cout << "Number of processes: ";
+    cin >> n;
+
+    vector<int> pid(n), at(n), bt(n), pr(n);
+    for (int i = 0; i < n; ++i) pid[i] = i + 1;
+
+    cout << "Enter Arrival Time, Burst Time and Priority (smaller number = higher priority) for each process:\n";
+    for (int i = 0; i < n; ++i) {
+        cout << "P" << pid[i] << " AT BT PR: ";
+        cin >> at[i] >> bt[i] >> pr[i];
+    }
+
+    vector<int> rem = bt;
+    vector<int> ct(n, 0), tat(n, 0), wt(n, 0);
+    vector<bool> done(n, false);
+
+    int completed = 0;
+    int time = 0;
+    int minAT = *min_element(at.begin(), at.end());
+    time = minAT;
+
+    while (completed < n) {
+        int idx = -1;
+        int bestPriority = INT_MAX;
+        int earliestArrivalForTie = INT_MAX;
+
+        // select among arrived (AT <= time) and not done the one with smallest priority
+        for (int i = 0; i < n; ++i) {
+            if (!done[i] && at[i] <= time) {
+                // choose smallest priority; tie-breaker: earliest arrival then smaller PID
+                if (pr[i] < bestPriority || (pr[i] == bestPriority && at[i] < earliestArrivalForTie)) {
+                    bestPriority = pr[i];
+                    earliestArrivalForTie = at[i];
+                    idx = i;
+                }
+            }
+        }
+
+        if (idx == -1) {
+            time++;
+            continue;
+        }
+
+        // execute 1 unit time
+        rem[idx]--;
+        time++;
+
+        if (rem[idx] == 0) {
+            done[idx] = true;
+            completed++;
+            ct[idx] = time;
+            tat[idx] = ct[idx] - at[idx];
+            wt[idx] = tat[idx] - bt[idx];
+        }
+    }
+
+    double avgTAT = 0, avgWT = 0;
+    cout << "\nP\tAT\tBT\tPR\tCT\tTAT\tWT\n";
+    for (int i = 0; i < n; ++i) {
+        cout << "P" << pid[i] << "\t" << at[i] << "\t" << bt[i] << "\t" << pr[i]
+             << "\t" << ct[i] << "\t" << tat[i] << "\t" << wt[i] << "\n";
+        avgTAT += tat[i]; avgWT += wt[i];
+    }
+    avgTAT /= n; avgWT /= n;
+    cout << "\nAverage Turnaround Time = " << avgTAT << "\n";
+    cout << "Average Waiting Time = " << avgWT << "\n";
+
+    return 0;
+}
+```
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+
+int main() 
+{
+    int n = 4;
+    vector<int> ct(n, 0), tat(n, 0), wt(n,0);
+    vector<int> at{0, 4, 4, 10};
+    vector<int> bt{8, 10, 3, 4};
+    vector<int> pr{3, 2, 3, 1};
+
+    vector<int> rem = bt;
+    // vector<int> ct(n, 0), tat(n, 0), wt(n, 0);
+    vector<bool> done(n, false);
+
+    int completed = 0;
+    int time = 0;
+    int minAT = *min_element(at.begin(), at.end());
+    time = minAT;
+
+    while (completed < n) {
+        int idx = -1;
+        int bestPriority = INT_MAX;
+        int earliestArrivalForTie = INT_MAX;
+
+        // select among arrived (AT <= time) and not done the one with smallest priority
+        for (int i = 0; i < n; ++i) {
+            if (!done[i] && at[i] <= time) {
+                // choose smallest priority; tie-breaker: earliest arrival then smaller PID
+                if (pr[i] < bestPriority || (pr[i] == bestPriority && at[i] < earliestArrivalForTie)) {
+                    bestPriority = pr[i];
+                    earliestArrivalForTie = at[i];
+                    idx = i;
+                }
+            }
+        }
+
+        if (idx == -1) {
+            time++;
+            continue;
+        }
+
+        // execute 1 unit time
+        rem[idx]--;
+        time++;
+
+        if (rem[idx] == 0) {
+            done[idx] = true;
+            completed++;
+            ct[idx] = time;
+            tat[idx] = ct[idx] - at[idx];
+            wt[idx] = tat[idx] - bt[idx];
+        }
+    }
+
+     double totalTAT = 0, totalWT = 0;
+
+    // Output
+    cout << "\nProcess\tAT\tBT\tPR\tCT\tTAT\tWT\n";
+    for (int i = 0; i < n; i++) {
+        cout << "P" << i+1 << "\t\t" 
+             << at[i] << "\t" 
+             << bt[i] << "\t" 
+             << pr[i] << "\t" 
+             << ct[i] << "\t" 
+             << tat[i] << "\t" 
+             << wt[i] << "\n";
+
+        totalTAT += tat[i];
+        totalWT += wt[i];
+    }
+
+    cout << fixed << setprecision(2);
+    cout << "\nAverage Turnaround Time: " << totalTAT / n;
+    cout << "\nAverage Waiting Time: " << totalWT / n << "\n";
+
+}
+```

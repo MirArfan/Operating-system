@@ -1,7 +1,7 @@
 ## ⚙️ Priority Scheduling (Non-Preemptive)
 
 
-## 🧠 Definition 
+### 🧠 Definition 
 
 In **Non-Preemptive Priority Scheduling**, each process is assigned a **priority number**.  
 The **CPU** is allocated to the process with the **highest priority** (usually a smaller number means higher priority).  
@@ -186,7 +186,7 @@ CPU সেই প্রসেসকেই আগে execute করে যার 
 ---
 
 
-### 🧮 Priority Scheduling (Non-Preemptive) - Example 2
+### 🧮 Priority Scheduling (Non-Preemptive) - Example
 
 ### Given:
 In this example, we consider a situation when the processes arrive at different times.
@@ -272,3 +272,103 @@ In this example, we consider a situation when the processes arrive at different 
 | **Average Waiting Time (AWT)** | **6.25 ms** |
 
 ---
+
+### 1 : Non-Preemptive Priority Scheduling (C++)
+
+ধারণা: প্রতিবার CPU ঐসব প্রসেস থেকে নেয় যেগুলো ইতিমধ্যেই এসেছে (AT ≤ current time) এবং যার priority সর্বোচ্চ (আমরা ধরেছি priority সংখ্যা যত ছোট, প্রাধান্য তত বেশি)।
+
+একবার CPU পেলে প্রসেসটি শেষ না হওয়া পর্যন্ত চলবে (non-preemptive)।
+```c++
+// Non-Preemptive Priority Scheduling (lower number => higher priority)
+
+#include <bits/stdc++.h>
+using namespace std;
+
+
+int main() 
+{
+    int n = 4;
+    vector<int>  ct(n, 0), tat(n, 0), wt(n,0);
+    vector<int> at{0, 4, 4, 8};
+    vector<int> bt{6, 10, 4, 3};
+    vector<int> pr{2, 1, 2, 1};
+
+    vector<int> done(n, 0);
+    int completed = 0, curr_time = 0;
+    vector<int> gantt;
+
+    while (completed < n) {
+        int idx = -1;
+        int highest_priority = INT_MAX;
+
+        for (int i = 0; i < n; i++) {
+            if (at[i] <= curr_time && done[i] == 0) {
+                if (pr[i] < highest_priority) {
+                    highest_priority = pr[i];
+                    idx = i;
+                }
+                else if (pr[i] == highest_priority) {
+                    if (at[i] < at[idx]) idx = i;
+                }
+            }
+        }
+
+        if (idx != -1) {
+            curr_time += bt[idx];
+            ct[idx] = curr_time;
+            done[idx] = 1;
+            gantt.push_back(pr[idx]);
+            completed++;
+        } 
+        else {
+            curr_time++;
+        }
+    }
+
+    for(int idx=0; idx<n; idx++)
+    {
+        tat[idx] = ct[idx] - at[idx];
+        wt[idx] = tat[idx] - bt[idx];
+    }
+    double totalTAT = 0, totalWT = 0;
+
+
+    cout << "\nGantt Chart: ";
+    for (int id : gantt) cout << " P" << id << " |";
+    cout << endl;
+
+
+    // Output
+    cout << "\nProcess\tAT\tBT\tPR\tCT\tTAT\tWT\n";
+    for (int i = 0; i < n; i++) {
+        cout << "P" << i+1 << "\t\t" 
+             << at[i] << "\t" 
+             << bt[i] << "\t" 
+             << pr[i] << "\t" 
+             << ct[i] << "\t" 
+             << tat[i] << "\t" 
+             << wt[i] << "\n";
+
+        totalTAT += tat[i];
+        totalWT += wt[i];
+    }
+
+    cout << fixed << setprecision(2);
+    cout << "\nAverage Turnaround Time: " << totalTAT / n;
+    cout << "\nAverage Waiting Time: " << totalWT / n << "\n";
+}
+```
+
+### 📝 Note: When Higher Priority = Larger Number  
+
+By default, in **Priority Scheduling**, a **smaller priority number** means **higher priority**.  
+If you want to reverse it — so that a **larger priority number** means **higher priority**,  
+you only need to change **two lines** in the code.  
+
+
+### ⚙️ Code Modification
+
+|Before | After |
+|--------------------|------------------|
+| `int highest_priority = INT_MAX;` | `int highest_priority = INT_MIN;` |
+| `if (pr[i] < highest_priority)` | `if (pr[i] > highest_priority)` |

@@ -108,14 +108,14 @@ CPU তখন ready queue-র পরবর্তী প্রসেস চাল
 | Process | AT | BT | CT | TAT = CT - AT | WT = TAT - BT |
 |---------|----|----|----|---------------|----------------|
 | P1      | 0  | 5  | 17 | 17 - 0 = 17  | 17 - 5 = 12   |
-| P2      | 1  | 6  | 22 | 22 - 1 = 21  | 21 - 6 = 15   |
-| P3      | 2  | 3  | 9  | 9 - 2 = 7    | 7 - 3 = 4     |
-| P4      | 3  | 1  | 9  | 9 - 3 = 6    | 6 - 1 = 5     |
+| P2      | 1  | 6  | 23 | 22 - 1 = 22  | 22 - 6 = 16   |
+| P3      | 2  | 3  | 11  | 11 - 2 = 9    | 9 - 3 = 6     |
+| P4      | 3  | 1  | 12  | 12 - 3 = 9    | 9 - 1 = 8     |
 | P5      | 4  | 5  | 24 | 24 - 4 = 20  | 20 - 5 = 15   |
 | P6      | 6  | 4  | 21 | 21 - 6 = 15  | 15 - 4 = 11   |
 
-**Average Turnaround Time (TAT)** = (17 + 21 + 7 + 6 + 20 + 15)/6 ≈ 14.33 units  
-**Average Waiting Time (WT)** = (12 + 15 + 4 + 5 + 15 + 11)/6 ≈ 10.33 units
+**Average Turnaround Time (TAT)** = (17 + 22 + 9 + 9 + 20 + 15)/6 ≈ 15.33 units  
+**Average Waiting Time (WT)** = (12 + 16 + 6 + 8 + 15 + 11)/6 ≈ 11.33 units
 
 ### 🧮 Ready Queue Timeline (Time Quantum Wise with Entry & Exit)
 
@@ -152,6 +152,14 @@ CPU তখন ready queue-র পরবর্তী প্রসেস চাল
 ```
 | P1 | P1 | P2 | P1 | P3 | P3 |
 0    2    4    6    7    9    11
+```
+```
+|---P1---|---P1---|---P2---|---P1---|---P3---|---P3---|
+0        2        4        6        7        9        11
+----------------------------------------------------------
+p1       p1=3     p2       p1       p3       p3=2
+                  p1=1     p3
+         
 ```
 
 ### 🧮 Step-by-Step Execution (Ready Queue Timeline & Execution)
@@ -205,3 +213,109 @@ CPU তখন ready queue-র পরবর্তী প্রসেস চাল
 
 ---
 
+### ⚖️ Comparison with FCFS (Round Robin vs FCFS)
+
+Round Robin scheduling is **very sensitive to time quantum**.
+
+- If the **time quantum is very small**, then **frequent context switching** occurs — the CPU keeps switching between processes too often, which increases overhead.
+- If the **time quantum is very large**, then each process runs for a long time before switching — so **preemption rarely happens**, and the algorithm behaves **just like FCFS (First Come First Serve)**.
+
+In short, when the time quantum becomes large enough, **Round Robin ≈ FCFS**.
+
+
+### 🪶 ব্যাখ্যা
+
+Round Robin মূলত FCFS-এর preemptive রূপ।  
+তবে এর আচরণ অনেকটাই **time quantum**-এর উপর নির্ভর করে।
+
+- যদি **time quantum ছোট হয়**, তাহলে **process বারবার switch হয়**, ফলে context switching বেড়ে যায়।
+- আর যদি **time quantum বড় হয়**, তখন প্রতিটি process অনেক সময় ধরে চলে এবং preemption প্রায় হয় না।  
+  তখন এটি কার্যত **FCFS-এর মতো আচরণ করে**।
+
+অর্থাৎ,  
+👉 ছোট quantum → বেশি context switch  
+👉 বড় quantum → Round Robin ≈ FCFS
+
+---
+
+### ✅ Round Robin এর Simplified Code
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, quantum;
+    cout << "Enter number of processes: ";
+    cin >> n;
+    cout << "Enter time quantum: ";
+    cin >> quantum;
+
+    vector<int> at(n), bt(n), rt(n), ct(n), tat(n), wt(n);
+    for (int i = 0; i < n; i++) {
+        cout << "P" << i+1 << " (AT BT): ";
+        cin >> at[i] >> bt[i];
+        rt[i] = bt[i];
+    }
+
+    queue<int> q;
+    int time = 0, completed = 0;
+    vector<bool> inQueue(n, false);
+
+    while (completed < n) {
+        // নতুন process আসলে queue তে দাও
+        for (int i = 0; i < n; i++) {
+            if (at[i] <= time && !inQueue[i] && rt[i] > 0) {
+                q.push(i);
+                inQueue[i] = true;
+            }
+        }
+
+        if (q.empty()) {
+            time++;
+            continue;
+        }
+
+        int i = q.front();
+        q.pop();
+
+        int execTime = min(quantum, rt[i]);
+        rt[i] -= execTime;
+        time += execTime;
+
+        // execution চলার সময় নতুন process আসলে enqueue করো
+        for (int j = 0; j < n; j++) {
+            if (at[j] <= time && !inQueue[j] && rt[j] > 0) {
+                q.push(j);
+                inQueue[j] = true;
+            }
+        }
+
+        if (rt[i] == 0) {
+            completed++;
+            ct[i] = time;
+        } else {
+            q.push(i); // বাকি আছে, আবার queue তে পাঠাও
+        }
+    }
+
+    // TAT & WT
+    for (int i = 0; i < n; i++) {
+        tat[i] = ct[i] - at[i];
+        wt[i] = tat[i] - bt[i];
+    }
+
+    cout << "\nProcess\tAT\tBT\tCT\tTAT\tWT\n";
+    for (int i = 0; i < n; i++) {
+        cout << "P" << i+1 << "\t"
+             << at[i] << "\t"
+             << bt[i] << "\t"
+             << ct[i] << "\t"
+             << tat[i] << "\t"
+             << wt[i] << "\n";
+    }
+}
+```
+Worst-case Time : 
+O(n × (B / q))
+
+B → Burst Time (BT), q → Time Quantum
